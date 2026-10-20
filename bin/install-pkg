@@ -1,0 +1,58 @@
+#!/usr/bin/perl
+
+use 5.022;
+use warnings;
+
+
+my $package = (join ' ', @ARGV) or usage();
+
+my $OS = `uname -a`;
+
+my $is_linux = $OS =~ /linux/i;
+
+if ($is_linux) {
+	if (-f '/etc/debian_version') {
+		print `apt install $package`;
+	} elsif (`which pacman`) {
+		print `pacman -Syyy $package`;
+	} elsif (`which zypper`) {
+		print `zypper install $package`;
+	} elsif (`which brew`) {
+		print `brew install $package`;
+	}
+} else {
+	if (`which brew`) {
+		print `brew install $package`;
+	} elsif ( `which pkg`) {
+		print `pkg install $package`;
+	} elsif ( `which pkg_add`) {
+		print `pkg_add $package`;
+	}
+}
+
+
+
+sub usage {
+	say "Usage: sudo install-pkg [package1] [package2] [..]";
+	exit;
+}
+
+1;
+
+=encoding utf8
+
+=head1 NAME
+
+install-pkg - Install system packages
+
+=head1 SYNOPSIS
+
+    Usage: sudo install-pkg [package1] [package2] [..]
+
+=head1 AUTHOR
+
+install-pkg developed by Ivan Trunaev, Russia, 2026
+
+Contacts <ivan@trunaev.ru>
+
+=cut
